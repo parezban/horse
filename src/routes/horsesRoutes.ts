@@ -1,16 +1,17 @@
 import express from 'express';
 import { createHorse, getHorses, updateHorse, deleteHorse, updateHealthStatus } from '../controllers/horsesController';
+import { checkRole } from '../middlewares/rbacMiddleware';
 
 const router = express.Router();
 
 router.route('/')
-    .post(createHorse)
-    .get(getHorses);
+    .post(checkRole(['admin']), createHorse)
+    .get(checkRole(['admin', 'vet']), getHorses);
 
 router.route('/:id')
-    .put(updateHorse)
-    .delete(deleteHorse);
+    .put(checkRole(['admin']), updateHorse)
+    .delete(checkRole(['admin']), deleteHorse);
 
-router.put('/:id/health', updateHealthStatus);
+router.put('/:id/health',checkRole(['admin', 'vet']), updateHealthStatus);
 
 export default router;
