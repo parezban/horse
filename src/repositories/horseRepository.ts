@@ -1,10 +1,9 @@
-import Horse from '../models/horse';
+import Horse, { HealthStatus, validHealthStatuses } from '../models/horse';
 import firestore from '../firestore';
 import logger from '../logger';
 import { getErrorMessage } from './helper';
 
 const horsesCollection = firestore.collection('horses');
-const validHealthStatuses = ['Healthy', 'Injured', 'Recovering', 'Unknown'];
 
 export class HorseRepository {
     static async createHorse(horseData: Horse): Promise<Horse> {
@@ -53,7 +52,7 @@ export class HorseRepository {
         }
     }
 
-    static async updateHealthStatus(id: string, healthStatus: string): Promise<Horse> {
+    static async updateHealthStatus(id: string, healthStatus: HealthStatus): Promise<Horse> {
         try {
             if (!validHealthStatuses.includes(healthStatus)) {
                 throw new Error('Invalid health status');
