@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createHorseSchema, filterHorsesSchema, updateHealthStatusSchema } from '../validation/horseValidation';
+import { createHorseSchema, filterHorsesSchema, updateHealthStatusSchema, updateHorseSchema } from '../validation/horseValidation';
 import logger from '../logger';
 
 export const createHorse = async (req: Request, res: Response) => {
@@ -28,7 +28,15 @@ export const getHorses = async (req: Request, res: Response) => {
 };
 
 export const updateHorse = async (req: Request, res: Response) => {
+    const { error, value } = updateHorseSchema.validate(req.body);
+    if (error) {
+        logger.warn('Invalid horse update data:', error.details);
+        res.status(400).json({ message: 'Invalid data', details: error.details });
+        return;
+    }
+
     res.status(201).json({ update: true });
+    return
 };
 
 export const deleteHorse = async (req: Request, res: Response) => {

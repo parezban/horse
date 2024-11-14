@@ -18,3 +18,13 @@ export const filterHorsesSchema = Joi.object({
 export const updateHealthStatusSchema = Joi.object({
   healthStatus: Joi.string().valid(...validHealthStatuses).required(),
 });
+
+export const updateHorseSchema = Joi.object({
+    name: Joi.string().optional(), 
+    age: Joi.number().integer().min(0).optional(),
+    breed: Joi.string().optional(),
+    healthStatus: Joi.string()
+      .valid(...validHealthStatuses)
+      .optional(),
+    owner: Joi.string().optional(),
+  });
