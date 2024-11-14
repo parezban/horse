@@ -1,4 +1,4 @@
-export interface Horse {
+export default interface Horse {
     id?: string;
     name: string;
     age: number;
