@@ -12,6 +12,6 @@ router.route('/:id')
     .put(checkRole(['admin']), updateHorse)
     .delete(checkRole(['admin']), deleteHorse);
 
-router.put('/:id/health',checkRole(['admin', 'vet']), updateHealthStatus);
+router.patch('/:id/health',checkRole(['admin', 'vet']), updateHealthStatus);
 
 export default router;

@@ -6,7 +6,7 @@ export const createHorseSchema = Joi.object({
   age: Joi.number().integer().min(1).max(30).required(),
   breed: Joi.string().min(3).max(30).required(),
   healthStatus: Joi.string().valid(...validHealthStatuses).required(),
-  owner: Joi.string().uuid().required(),
+  owner: Joi.string().length(20).required(),
 });
 
 export const filterHorsesSchema = Joi.object({
