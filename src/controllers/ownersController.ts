@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { createOwnerSchema, updateOwnerSchema } from '../validation/ownerValidation';
 import logger from '../logger';
 import OwnerService from '../services/ownerService';
+import OwnerNotFoundError from '../errors/ownerNotFoundError';
 
 export const getOwners = async (req: Request, res: Response) => {
     try {
@@ -73,18 +74,16 @@ export const updateOwner = async (req: Request, res: Response) => {
     }
 
     try {
-        let owner = await OwnerService.getOwnerByID(req.params.id);
-
-        if (!owner) {
-            res.status(404).json({ message: 'Owner not found' });
-            return;
-        }
-
-        owner = await OwnerService.updateOwner(req.params.id, value);
+        const owner = await OwnerService.updateOwner(req.params.id, value);
 
         res.status(200).json(owner);
         return;
     } catch (error) {
+        if (error instanceof OwnerNotFoundError) {
+            res.status(404).json({ message: 'Owner not found' });
+            return;
+        }
+        
         logger.error(`Error getting owner: ${error}`);
 
         res.status(500).json({ message: 'Internal server error' });
@@ -94,17 +93,16 @@ export const updateOwner = async (req: Request, res: Response) => {
 
 export const deleteOwner = async (req: Request, res: Response) => {
     try {
-        const owner = await OwnerService.getOwnerByID(req.params.id);
-
-        if (!owner) {
-            res.status(404).json({ message: 'Owner not found' });
-            return;
-        }
         await OwnerService.deleteOwner(req.params.id);
 
         res.status(204).json();
         return;
     } catch (error) {
+        if (error instanceof OwnerNotFoundError) {
+            res.status(404).json({ message: 'Owner not found' });
+            return;
+        }
+
         logger.error(`Error deleting owner: ${error}`);
 
         res.status(500).json({ message: 'Internal server error' });
