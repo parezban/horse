@@ -56,7 +56,7 @@ describe('Owner Controller', () => {
     });
 
     it('should update an owner successfully', async () => {
-        const updatedOwner = updateOwnerData; // Sample updated data
+        const updatedOwner = updateOwnerData;
         (OwnerRepository.updateOwner as jest.Mock).mockResolvedValue(updatedOwner);
 
         const response = await request(app)

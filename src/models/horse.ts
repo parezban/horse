@@ -1,4 +1,3 @@
-// healthStatus.ts
 export const validHealthStatuses = ['Healthy', 'Injured', 'Recovering', 'Unknown'] as const;
 export type HealthStatus = typeof validHealthStatuses[number];
 
