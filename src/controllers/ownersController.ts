@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { createOwnerSchema, updateOwnerSchema } from '../validation/ownerValidation';
 import logger from '../logger';
 import OwnerService from '../services/ownerService';
-import OwnerNotFoundError from '../errors/ownerNotFoundError';
+import { handleControllerError } from '../middlewares/commonMiddleware';
 
 export const getOwners = async (req: Request, res: Response) => {
     try {
@@ -11,10 +11,7 @@ export const getOwners = async (req: Request, res: Response) => {
         res.status(200).json(owners);
         return;
     } catch (error) {
-        logger.error(`Error getting owners: ${error}`);
-
-        res.status(500).json({ message: 'Internal server error' });
-        return;
+        handleControllerError(res, error as Error);
     }
 };
 
@@ -30,10 +27,7 @@ export const getOwnerById = async (req: Request, res: Response) => {
         res.status(200).json(owner);
         return;
     } catch (error) {
-        logger.error(`Error getting owner: ${error}`);
-
-        res.status(500).json({ message: 'Internal server error' });
-        return;
+        handleControllerError(res, error as Error);
     }
 };
 
@@ -58,9 +52,7 @@ export const createOwner = async (req: Request, res: Response) => {
         res.status(201).json(createdOwner);
         return;
     } catch (error) {
-        logger.error(`Error creating owner: ${error}`);
-        res.status(500).json({ message: 'Internal server error' });
-        return;
+        handleControllerError(res, error as Error);
     }
 
 };
@@ -79,15 +71,9 @@ export const updateOwner = async (req: Request, res: Response) => {
         res.status(200).json(owner);
         return;
     } catch (error) {
-        if (error instanceof OwnerNotFoundError) {
-            res.status(404).json({ message: 'Owner not found' });
-            return;
-        }
-        
-        logger.error(`Error getting owner: ${error}`);
-
-        res.status(500).json({ message: 'Internal server error' });
-        return;
+        handleControllerError(res, error as Error, {
+            OwnerNotFoundError: () => res.status(404).json({ message: 'Owner not found' }),
+        });
     }
 };
 
@@ -98,14 +84,8 @@ export const deleteOwner = async (req: Request, res: Response) => {
         res.status(204).json();
         return;
     } catch (error) {
-        if (error instanceof OwnerNotFoundError) {
-            res.status(404).json({ message: 'Owner not found' });
-            return;
-        }
-
-        logger.error(`Error deleting owner: ${error}`);
-
-        res.status(500).json({ message: 'Internal server error' });
-        return;
+        handleControllerError(res, error as Error, {
+            OwnerNotFoundError: () => res.status(404).json({ message: 'Owner not found' }),
+        });
     }
 };

@@ -2,8 +2,7 @@ import e, { Request, Response } from 'express';
 import { createHorseSchema, filterHorsesSchema, updateHealthStatusSchema, updateHorseSchema } from '../validation/horseValidation';
 import logger from '../logger';
 import HorseService from '../services/horseService';
-import OwnerNotFoundError from '../errors/ownerNotFoundError';
-import HorseNotFoundError from '../errors/horseNotFoundError';
+import { handleControllerError } from '../middlewares/commonMiddleware';
 
 export const createHorse = async (req: Request, res: Response) => {
     const { error, value } = createHorseSchema.validate(req.body);
@@ -18,15 +17,9 @@ export const createHorse = async (req: Request, res: Response) => {
         res.status(201).json(horse);
         return;
     } catch (error) {
-        if (error instanceof OwnerNotFoundError) {
-            logger.warn(`Error creating horse: ${error}`);
-            res.status(404).json({ message: 'Owner not found' });
-            return;
-        }
-
-        logger.error(`Error creating horse: ${error}`);
-        res.status(500).json({ message: 'Internal server error' });
-        return;
+        handleControllerError(res, error as Error, {
+            OwnerNotFoundError: () => res.status(404).json({ message: 'Owner not found' }),
+        });
     }
 };
 
@@ -44,9 +37,7 @@ export const getHorses = async (req: Request, res: Response) => {
         res.status(200).json(horses);
         return;
     } catch (error) {
-        logger.error(`Error getting horses: ${error}`);
-        res.status(500).json({ message: 'Internal server error' });
-        return;
+        handleControllerError(res, error as Error);
     }
 };
 
@@ -63,17 +54,10 @@ export const updateHorse = async (req: Request, res: Response) => {
         res.status(200).json(horse);
         return;
     } catch (error) {
-        if (error instanceof HorseNotFoundError) {
-            res.status(404).json({ message: 'Horse not found' });
-            return;
-        } else if (error instanceof OwnerNotFoundError) {
-            res.status(404).json({ message: 'Owner not found' });
-            return;
-        }
-
-        logger.error(`Error updating horse: ${error}`);
-        res.status(500).json({ message: 'Internal server error' });
-        return;
+        handleControllerError(res, error as Error, {
+            OwnerNotFoundError: () => res.status(404).json({ message: 'Owner not found' }),
+            HorseNotFoundError: () => res.status(404).json({ message: 'Horse not found' }),
+        });
     }
 };
 
@@ -84,14 +68,9 @@ export const deleteHorse = async (req: Request, res: Response) => {
         res.status(204).json();
         return;
     } catch (error) {
-        if (error instanceof HorseNotFoundError) {
-            res.status(404).json({ message: 'Horse not found' });
-            return;
-        }
-
-        logger.error(`Error deleting horse: ${error}`);
-        res.status(500).json({ message: 'Internal server error' });
-        return;
+        handleControllerError(res, error as Error, {
+            HorseNotFoundError: () => res.status(404).json({ message: 'Horse not found' }),
+        });
     }
 };
 
@@ -108,13 +87,8 @@ export const updateHealthStatus = async (req: Request, res: Response) => {
         res.status(200).json(horse);
         return;
     } catch (error) {
-        if (error instanceof HorseNotFoundError) {
-            res.status(404).json({ message: 'Horse not found' });
-            return;
-        }
-
-        logger.error(`Error updating horse: ${error}`);
-        res.status(500).json({ message: 'Internal server error' });
-        return;
+        handleControllerError(res, error as Error, {
+            HorseNotFoundError: () => res.status(404).json({ message: 'Horse not found' }),
+        });
     }
 };
