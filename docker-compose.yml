@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: horse-app
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      FIRESTORE_EMULATOR_HOST: "firestore-emulator:8080"
+    volumes:
+      - .:/app
+    networks:
+      - horse-network
+    depends_on:
+      - firestore-emulator
+
+  firestore-emulator:
+    image: google/cloud-sdk:latest
+    container_name: firestore-emulator
+    ports:
+      - "8080:8080"
+    command: gcloud beta emulators firestore start --host-port=0.0.0.0:8080
+    environment:
+      GOOGLE_APPLICATION_CREDENTIALS: /emulator/credentials.json
+    volumes:
+      - ./emulator:/emulator
+    networks:
+      - horse-network
+
+networks:
+  horse-network:
+    driver: bridge
