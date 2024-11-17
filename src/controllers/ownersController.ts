@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { createOwnerSchema, updateOwnerSchema } from '../validation/ownerValidation';
 import logger from '../logger';
 import OwnerService from '../services/ownerService';
-import { handleControllerError } from '../middlewares/commonMiddleware';
+import { handleControllerError } from '../utils/controllerHelper';
 
 export const getOwners = async (req: Request, res: Response) => {
     try {

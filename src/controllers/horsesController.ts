@@ -1,8 +1,8 @@
-import e, { Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { createHorseSchema, filterHorsesSchema, updateHealthStatusSchema, updateHorseSchema } from '../validation/horseValidation';
 import logger from '../logger';
 import HorseService from '../services/horseService';
-import { handleControllerError } from '../middlewares/commonMiddleware';
+import { handleControllerError } from '../utils/controllerHelper';
 
 export const createHorse = async (req: Request, res: Response) => {
     const { error, value } = createHorseSchema.validate(req.body);

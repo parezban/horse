@@ -1,6 +1,9 @@
-export function getErrorMessage(error: any): string {
-    if (error instanceof Error) {
-      return error.message;
-    }
-    return 'An unknown error occurred';
+export function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  } else if (typeof error === 'string') {
+    return error;
+  }
+
+  return 'An unknown error occurred';
 }
