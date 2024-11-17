@@ -20,11 +20,11 @@ export const updateHealthStatusSchema = Joi.object({
 });
 
 export const updateHorseSchema = Joi.object({
-    name: Joi.string().optional(), 
-    age: Joi.number().integer().min(0).optional(),
-    breed: Joi.string().optional(),
-    healthStatus: Joi.string()
-      .valid(...validHealthStatuses)
-      .optional(),
-    owner: Joi.string().optional(),
-  });
+  name: Joi.string().optional(),
+  age: Joi.number().integer().min(0).optional(),
+  breed: Joi.string().optional(),
+  healthStatus: Joi.string()
+    .valid(...validHealthStatuses)
+    .optional(),
+  owner: Joi.string().optional(),
+}).or('name', 'age', 'breed', 'healthStatus', 'owner');

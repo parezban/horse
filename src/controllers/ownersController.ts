@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
 import { createOwnerSchema, updateOwnerSchema } from '../validation/ownerValidation';
-import logger from '../logger';
 import OwnerService from '../services/ownerService';
-import { handleControllerError } from '../utils/controllerHelper';
+import { handleControllerError, validateRequest } from '../utils/controllerHelper';
 
 export const getOwners = async (req: Request, res: Response) => {
     try {
@@ -32,13 +31,8 @@ export const getOwnerById = async (req: Request, res: Response) => {
 };
 
 export const createOwner = async (req: Request, res: Response) => {
-    const { error, value } = createOwnerSchema.validate(req.body);
-
-    if (error) {
-        logger.warn('Invalid owner create data:', error.details);
-        res.status(400).json({ message: 'Invalid data', details: error.details });
-        return;
-    }
+    const { error, value } = validateRequest(createOwnerSchema, req.body, res)
+    if (error) return;
 
     try {
         const owner = await OwnerService.findOwnerByEmail(value.email);
@@ -58,12 +52,8 @@ export const createOwner = async (req: Request, res: Response) => {
 };
 
 export const updateOwner = async (req: Request, res: Response) => {
-    const { error, value } = updateOwnerSchema.validate(req.body);
-    if (error) {
-        logger.warn('Invalid owner update data:', error.details);
-        res.status(400).json({ message: 'Invalid data', details: error.details });
-        return;
-    }
+    const { error, value } = validateRequest(updateOwnerSchema, req.body, res)
+    if (error) return;
 
     try {
         const owner = await OwnerService.updateOwner(req.params.id, value);

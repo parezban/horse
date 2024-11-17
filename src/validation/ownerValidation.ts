@@ -8,4 +8,4 @@ export const createOwnerSchema = Joi.object({
 export const updateOwnerSchema = Joi.object({
   name: Joi.string().min(3).max(50),
   email: Joi.string().email(),
-});
+}).or('name', 'email');

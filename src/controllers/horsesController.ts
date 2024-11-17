@@ -1,16 +1,11 @@
 import { Request, Response } from 'express';
 import { createHorseSchema, filterHorsesSchema, updateHealthStatusSchema, updateHorseSchema } from '../validation/horseValidation';
-import logger from '../logger';
 import HorseService from '../services/horseService';
-import { handleControllerError } from '../utils/controllerHelper';
+import { handleControllerError, validateRequest } from '../utils/controllerHelper';
 
 export const createHorse = async (req: Request, res: Response) => {
-    const { error, value } = createHorseSchema.validate(req.body);
-    if (error) {
-        logger.warn('Invalid horse creation data:', error.details);
-        res.status(400).json({ message: 'Invalid data', details: error.details });
-        return;
-    }
+    const {error, value} = validateRequest(createHorseSchema, req.body, res)
+    if (error) return;
 
     try {
         const horse = await HorseService.createHorse(value);
@@ -24,13 +19,8 @@ export const createHorse = async (req: Request, res: Response) => {
 };
 
 export const getHorses = async (req: Request, res: Response) => {
-    const { error, value } = filterHorsesSchema.validate(req.query);
-
-    if (error) {
-        logger.warn('Invalid horse filter data:', error.details);
-        res.status(400).json({ message: 'Invalid data', details: error.details });
-        return;
-    }
+    const {error, value} = validateRequest(filterHorsesSchema, req.query, res)
+    if (error) return;
 
     try {
         const horses = await HorseService.getHorses(value);
@@ -40,14 +30,9 @@ export const getHorses = async (req: Request, res: Response) => {
         handleControllerError(res, error as Error);
     }
 };
-
 export const updateHorse = async (req: Request, res: Response) => {
-    const { error, value } = updateHorseSchema.validate(req.body);
-    if (error) {
-        logger.warn('Invalid horse update data:', error.details);
-        res.status(400).json({ message: 'Invalid data', details: error.details });
-        return;
-    }
+    const {error, value} = validateRequest(updateHorseSchema, req.body, res)
+    if (error) return;
 
     try {
         const horse = await HorseService.updateHorse(req.params.id, value);
@@ -75,12 +60,8 @@ export const deleteHorse = async (req: Request, res: Response) => {
 };
 
 export const updateHealthStatus = async (req: Request, res: Response) => {
-    const { error, value } = updateHealthStatusSchema.validate(req.body);
-    if (error) {
-        logger.warn('Invalid health status update data:', error.details);
-        res.status(400).json({ message: 'Invalid data', details: error.details });
-        return;
-    }
+    const {error, value} = validateRequest(updateHealthStatusSchema, req.body, res)
+    if (error) return;
 
     try {
         const horse = await HorseService.updateHorse(req.params.id, value);
