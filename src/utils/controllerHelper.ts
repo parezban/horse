@@ -1,6 +1,5 @@
 import logger from '../logger';
 import { Response } from 'express';
-import { createHorseSchema } from '../validation/horseValidation';
 import Joi from 'joi';
 
 export const handleControllerError = <ErrType extends Error>(res: Response, error: ErrType, customHandlers?: Record<string, () => void>) => {
@@ -15,7 +14,7 @@ export const handleControllerError = <ErrType extends Error>(res: Response, erro
     res.status(500).json({ message: 'Internal server error' });
 };
 
-export const validateRequest = (schema: any, data: any, res: Response):  Joi.ValidationResult<any> => {
+export const validateRequest = (schema: Joi.ObjectSchema, data: unknown, res: Response):  Joi.ValidationResult => {
     const { error, value } = schema.validate(data);
     if (error) {
 
